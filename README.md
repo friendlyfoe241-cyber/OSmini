@@ -1,5 +1,6 @@
 # OSmini
 
+
 **The mini operating system for organizations.**
 
 People + Projects + Tasks + Milestones + Automations + AI-powered operational
