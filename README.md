@@ -197,9 +197,11 @@ Tables: `automations`, `automation_conditions`, `automation_actions`,
 
 Any scheduler that can send an HTTP POST works:
 
-- Vercel Cron: `vercel.json` registers `/api/cron` every 5 minutes (you
-  must also configure CRON env for the HTTP endpoint — recommended to
-  trigger via Supabase Edge Function below or an external service).
+- Vercel Cron: `vercel.json` registers `/api/cron` once daily (09:00 UTC) —
+  the maximum frequency allowed on Hobby plans. For finer-grained cycles
+  (e.g. every 5 minutes), use the Supabase Edge Function below or any
+  external scheduler hitting `POST /api/cron` with the `CRON_SECRET` bearer
+  token.
 - Supabase Edge Function: `supabase/functions/automation-cron/index.ts`
   forwards to `/api/cron`. Schedule it from `pg_cron` (SQL shown in the
   file header).
@@ -282,9 +284,10 @@ npm run build      # production build
 3. Generate `CRON_SECRET` with `openssl rand -hex 32`.
 4. In Vercel, add the environment variables from `.env.example` (Gemini
    optional).
-5. Import the repo in Vercel. `vercel.json` already configures
-   `/api/cron` to run every 5 minutes (if you use the free plan, replace
-   with Supabase Edge Function + pg_cron instead — see §8).
+5. Import the repo in Vercel. `vercel.json` configures `/api/cron` to run
+   daily at 09:00 UTC — the maximum frequency on Hobby plans. For
+   finer-grained automation cycles, deploy the Supabase Edge Function and
+   schedule it with pg_cron (see §8).
 6. (Optional) Deploy the Edge Function:
    `supabase functions deploy automation-cron`, set
    `OSMINI_APP_URL` / `OSMINI_CRON_SECRET` secrets, schedule via pg_cron.
